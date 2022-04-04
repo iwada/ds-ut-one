@@ -12,12 +12,12 @@
   <div class="stackedit__html"><h1 id="a-guide-to-setting-up-zookeper">A Guide to Setting up Zookeper</h1>
 <h4 id="by-iwada-eja-">by Iwada Eja &amp; Yashar Ahmadi</h4>
 <p><a href="https://zookeeper.apache.org">Apache ZooKeeper</a> is an open-source software that allows for extremely resilient and dependable distributed coordination. It is often used to manage configuration information, naming services, distributed synchronization, quorum, and state in distributed systems. ZooKeeper is also used by distributed systems to implement consensus, leader election, and group management.</p>
-<p>In this guide, i’ll explore installing and configuring Apache Zookeeper 3.4.13 on On Ubuntu 20.04. ZooKeeper is also designed to be replicated over a collection of hosts, known as an ensemble, in order to achieve high availability and resilience. I’ll start by installing a single-node ZooKeeper server on its own, then explore  building up a multi-node cluster. The solo installation is beneficial in development and testing environments, but for production environments, a cluster is the most practical choice.</p>
+<p>In this guide, we'll explore installing and configuring Apache Zookeeper 3.4.13 on On Ubuntu 20.04. ZooKeeper is also designed to be replicated over a collection of hosts, known as an ensemble, in order to achieve high availability and resilience. we'll start by installing a single-node ZooKeeper server on its own, then explore  building up a multi-node cluster. The solo installation is beneficial in development and testing environments, but for production environments, a cluster is the most practical choice.</p>
 <h1 id="initial-setup">Initial Setup</h1>
-<p>As Zookepper relies on <a href="https://www.oracle.com/java/">Java</a>, I’ll also begin the guide by setting up Java and other prerequisite. I’ll be also using a Ubuntu 18.04 server with 4GB RAM for the Standalone installation.</p>
+<p>As Zookepper relies on <a href="https://www.oracle.com/java/">Java</a>, we'll also begin the guide by setting up Java and other prerequisite. we'll be also using a Ubuntu 18.04 server with 4GB RAM for the Standalone installation.</p>
 <p>However, because ZooKeeper keeps data in memory to achieve high throughput and low latency, production systems work best with 8GB of RAM. Lower amounts of RAM may lead to JVM swapping, which could cause ZooKeeper server latency. High ZooKeeper server latency could result in issues like client session timeouts that would have an adverse impact on system functionality<sup>1</sup>.</p>
 <h4 id="step-1-—-creating-a-new-user">Step 1 — Creating a New User</h4>
-<p>I’ll create a new user <strong>zookeeper</strong> to use throughout this guide.</p>
+<p>we'll create a new user <strong>zookeeper</strong> to use throughout this guide.</p>
 <pre><code>sudo useradd zookeeper -m &amp;&amp; usermod --shell /bin/bash zookeeper
 sudo passwd zookeeper
 usermod -aG sudo zookeeper
@@ -33,14 +33,14 @@ usermod -aG sudo zookeeper
 Zookeeper would need <code>JAVA_HOME</code> environment variable set.<br>
 Running <code>sudo update-alternatives --config java</code> would give us the path to our <code>JAVA</code>installation. We set this path by adding it to the relevant <code>environment</code> file</p>
 <h4 id="step-3-—-creating-a-data-directory-for-zookeeper">Step 3 — Creating a Data Directory for ZooKeeper</h4>
-<p>To survive a reboot, ZooKeeper saves all configuration and state data to disk. I’ll build a data directory for ZooKeeper to read and write data in this phase. The data directory can be created on either the local filesystem or a remote storage disk. In this guide, the data directory will be created on my local filesystem.<br>
+<p>To survive a reboot, ZooKeeper saves all configuration and state data to disk. we'll build a data directory for ZooKeeper to read and write data in this phase. The data directory can be created on either the local filesystem or a remote storage disk. In this guide, the data directory will be created on my local filesystem.<br>
 Create a directory for ZooKeeper to use:</p>
 <pre><code>sudo mkdir -p /data/zookeeper
 </code></pre>
 <p>Grant the <strong>zookeeper</strong> user ownership to the directory:<br>
 <code>sudo chown zookeeper:zookeeper /data/zookeeper</code></p>
 <h4 id="step-4-—-downloading-and-extracting-the-zookeeper-binaries">Step 4 — Downloading and Extracting the ZooKeeper Binaries</h4>
-<p>Here, I’ll manually download and extract the ZooKeeper binaries to the ‘opt’ directory in this step. I’ll install ZooKeeper manually because it will give me complete control over the version I use.<br>
+<p>Here, we'll manually download and extract the ZooKeeper binaries to the ‘opt’ directory in this step. we'll install ZooKeeper manually because it will give me complete control over the version I use.<br>
 Use the <code>wget</code> command  to get zookeeper binaries from <a href="https://zookeeper.apache.org/releases.html">Zookepper</a> download page.<br>
 <code>sudo wget https://dlcdn.apache.org/zookeeper/zookeeper-3.8.0/apache-zookeeper-3.8.0-bin.tar.gz</code><br>
 Extract the binaries from the compressed archive:<br>
@@ -56,7 +56,7 @@ The configuration file will be located in the <code>/opt/apache-zookeeper-3.8.0-
 <li><code>clientPort</code>: The port used to listen for client connections.</li>
 <li><code>maxClientCnxns</code>: Limits the maximum number of client connections.</li>
 </ul>
-<p>I’ll create a configuration file named <code>zoo.cfg</code> at <code>apache-zookeeper-3.8.0-bin/conf</code>.</p>
+<p>we'll create a configuration file named <code>zoo.cfg</code> at <code>apache-zookeeper-3.8.0-bin/conf</code>.</p>
 <p><code>nano /opt/apache-zookeeper-3.8.0-bin/conf/zoo.cfg</code></p>
 <p>We’ll add the following properties and values to that file</p>
 <h4 id="step-6-—-starting-zookeeper-and-testing-the-standalone-installation">Step 6 — Starting ZooKeeper and Testing the Standalone Installation</h4>
@@ -85,13 +85,13 @@ Typing <code>quit</code> closes the client session and <code>bin/zkServer.sh sto
 <li><code>initLimit</code>  specifies the time that the initial synchronization phase can take. This is the time within which each of the nodes in the quorum needs to connect to the leader.</li>
 <li><code>syncLimit</code>  specifies the time that can pass between sending a request and receiving an acknowledgment. This is the maximum time nodes can be out of sync from the leader. ZooKeeper nodes use a pair of ports,  <code>:2888</code>  and  <code>:3888</code>, for follower nodes to connect to the leader node and for leader election, respectively.</li>
 </ul>
-<p>To complete my multi-node configuration, I’ll will specify a node ID on each of the servers by creating a <code>myid</code> file on each node at the <code>/data/zookeeper</code> location.  This file will contain a number that correlates to the server number assigned in the configuration file.</p>
+<p>To complete my multi-node configuration, we'll will specify a node ID on each of the servers by creating a <code>myid</code> file on each node at the <code>/data/zookeeper</code> location.  This file will contain a number that correlates to the server number assigned in the configuration file.</p>
 <h4 id="step-8-—-running-and-testing-the-multi-node-installation">Step 8 — Running and Testing the Multi-Node Installation</h4>
-<p>With each node configured to work as a cluster, we are ready to start a quorum. In this step, i’ll will start the quorum on each node and then test my cluster by creating sample data in ZooKeeper.</p>
-<p>To start a quorum node, i’ll first change to the  <code>/opt/apache-zookeeper-3.8.0-bin</code>  directory on each node:</p>
+<p>With each node configured to work as a cluster, we are ready to start a quorum. In this step, we'll will start the quorum on each node and then test my cluster by creating sample data in ZooKeeper.</p>
+<p>To start a quorum node, we'll first change to the  <code>/opt/apache-zookeeper-3.8.0-bin</code>  directory on each node:</p>
 <p>Start each node with the following command:</p>
 <p><code>./zkCli.sh -server 127.0.0.1:2181</code></p>
-<p>Then on my <strong>zookeper_3</strong> node, i’ll go the the <code>/opt/zookeeper</code> directory</p>
+<p>Then on my <strong>zookeper_3</strong> node, we'll go the the <code>/opt/zookeeper</code> directory</p>
 <p><code>bin/zkCli.sh -server zookeeper_1_ip:2181</code></p>
 <p>Testing that I can successfully create, list, and then delete a znode is essential to establishing that your ZooKeeper cluster is installed and configured correctly.</p>
 <p>Create a znode named  <code>ds_ut_1</code>  and associate the string  <code>sample_data</code>  with it:</p>
