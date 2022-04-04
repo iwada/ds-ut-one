@@ -1,66 +1,73 @@
-import sys, socket, datetime, time, random,ra
+from multiprocessing.dummy import active_children
+import sys, socket, datetime, time, random
+import ricart_agrawala as ra
+from tempfile import tempdir
 import threading 
 from threading import Thread
 
 # global variables
-list_of_threads = []
-default_min_time_out = 10
-default_max_time_out = 10
-
-STATES = ["DO-NOT-WANT","HELD","WANTED"]
+list_of_processes = []
+min_critical_section_timeout = 10
+max_critical_section_timeout = 10
+min_process_timeout = 5
+max_process_timeout = 5
+STATES = {0: "WANTED",  1: "HELD",  2: "DO_NOT_WANT"}
 
 class RAThread(Thread):
-    def __init__(self, id,state):
+   
+    def __init__(self):
        Thread.__init__(self)
-       self.state = state
-       self.id = id
-       self.active = []
-       self.lock = threading.Lock()
 
     def run(self):
         while True:
             running()
 
+def list_processes():
+    for dic in list_of_processes:
+        print(f"P{dic['id']}, {STATES[dic['state']]}")
+        
+def run(self):
+        while True:
+            running()
+        
+def update_max_critical_section_timeout(args):
+    #print(int(args))
+    global max_critical_section_timeout
+    max_critical_section_timeout = int(args)
 
-def list():
-    for thread in list_of_threads:
-        print(f"P{thread.id},", thread.state)
-
-def time_cs(args):
-    print("time_cs")
-    print(args)
-
-def update_time(args):
-    print(int(args))
-    global default_max_time_out
-    default_max_time_out = int(args)
+def update_max_process_timeout(args):
+    #print(int(args))
+    global max_process_timeout
+    max_process_timeout = int(args)
 
 def setup_nodes(number_of_nodes):
+    number_of_nodes = int(number_of_nodes)
+    ports = random.sample(range(26000, 36000), number_of_nodes*3)
+    lh = '127.0.0.1'
+    l = {}
     #print(number_of_nodes)
     for i in range(int(number_of_nodes)):
-        th = RAThread(i+1, STATES[0])
-        th.start()
-        list_of_threads.append(th)
+        id,state = ra.CreateProcess((lh, ports[i]), i)
+        l = {'id': id, 'state': state }
+        list_of_processes.append(l)
 
 def running():
     while(True):
-        #pass
-        time.sleep((default_min_time_out + default_max_time_out) / 2)
-        #test_change_states()
-        test.acquire()
-        time.sleep(self.use_time)
-        test.release()
-
-
-        
-
+        #print(max_process_timeout)
+        #print(max_critical_section_timeout)
+        ra.MutexLock(process_id, 'Mutex')
+        time_out = random.randint(min_process_timeout,max_process_timeout)
+        time.sleep(3)
+        # pick a random thread to request 
+    
 def main(args):
+    th = RAThread()
+    th.start()
     setup_nodes(args[1])
 
     # start the main loop
     running = True
     
-
     while running:
         inp = input().lower()
         cmd = inp.split(" ")
@@ -83,20 +90,20 @@ def main(args):
         # handle list
         elif command == "list":
             try:
-                list()
+                list_processes()
             except:
                 print("Error")
 
         # handle clock
         elif command == "time-cs":
             try:
-                time_cs(args)
+                update_max_critical_section_timeout(args)
             except:
                 print("Error")
 
         elif command == "time-p":
             try:
-                update_time(args)
+                update_max_process_timeout(args)
                 #print(args)
             except:
                 print("Error")
