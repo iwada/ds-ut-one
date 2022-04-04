@@ -1,3 +1,5 @@
+#!/Users/dev/miniforge3/envs/ds-ut/bin/python
+
 from multiprocessing.dummy import active_children
 import sys, socket, datetime, time, random
 import ricart_agrawala as ra
@@ -55,7 +57,7 @@ def running():
     while(True):
         #print(max_process_timeout)
         #print(max_critical_section_timeout)
-        ra.MutexLock(process_id, 'Mutex')
+        ra.MutexLock('Mutex')
         time_out = random.randint(min_process_timeout,max_process_timeout)
         time.sleep(3)
         # pick a random thread to request 

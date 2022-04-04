@@ -4,13 +4,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome file</title>
+  <title>Installing Zookeeper</title>
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 
 <body class="stackedit">
   <div class="stackedit__html"><h1 id="a-guide-to-setting-up-zookeper">A Guide to Setting up Zookeper</h1>
-<h4 id="by-iwada-eja-">by Iwada Eja &amp;</h4>
+<h4 id="by-iwada-eja-">by Iwada Eja &amp; Yashar Ahmadi</h4>
 <p><a href="https://zookeeper.apache.org">Apache ZooKeeper</a> is an open-source software that allows for extremely resilient and dependable distributed coordination. It is often used to manage configuration information, naming services, distributed synchronization, quorum, and state in distributed systems. ZooKeeper is also used by distributed systems to implement consensus, leader election, and group management.</p>
 <p>In this guide, i’ll explore installing and configuring Apache Zookeeper 3.4.13 on On Ubuntu 20.04. ZooKeeper is also designed to be replicated over a collection of hosts, known as an ensemble, in order to achieve high availability and resilience. I’ll start by installing a single-node ZooKeeper server on its own, then explore  building up a multi-node cluster. The solo installation is beneficial in development and testing environments, but for production environments, a cluster is the most practical choice.</p>
 <h1 id="initial-setup">Initial Setup</h1>
